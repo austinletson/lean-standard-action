@@ -1,0 +1,41 @@
+name: "Lean Standard CI"
+description: |
+  Standard CI for Lean projects. 
+  Installs elan, (optionally) gets Mathlib cache, builds, tests, and (optionally) lints the project
+inputs:
+  use-mathlib-cache:
+    description: 'Set to "true" if your project is downstream of Mathlib to run "lake exe cache get" before build'
+    required: false
+    default: "false"
+  use-std-linter-framework:
+    description: 'Set to "true" if your project is downstream of Std to use Std''s linter framework'
+    required: false
+    default: "false"
+runs:
+  using: "composite"
+  steps:
+    - name: install elan
+      run: |
+        set -o pipefail
+        curl -sSfL https://github.com/leanprover/elan/releases/download/v1.4.2/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+        ./elan-init -y --default-toolchain none
+        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+      shell: bash
+
+    - name: get mathlib cache
+      if: ${{ inputs.downstream-of-mathlib == 'true' }}
+      run: lake exe cache get
+      shell: bash
+
+    - name: build ${{ github.repository }}
+      run: lake build
+      shell: bash
+
+    - name: test ${{ github.repository }}
+      run: make test
+      shell: bash
+
+    - name: lint ${{ github.repository }}
+      if: ${{ inputs.downstream-of-std == 'true' }}
+      run: lake exe runLinter
+      shell: bash
