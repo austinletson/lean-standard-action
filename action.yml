@@ -34,7 +34,7 @@ runs:
       shell: bash
 
     - name: test ${{ github.repository }}
-      run: make test
+      run: $GITHUB_ACTION_PATH/test.sh
       shell: bash
 
     - name: lint ${{ github.repository }}
