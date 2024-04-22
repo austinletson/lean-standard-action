@@ -29,7 +29,7 @@ runs:
     - uses: actions/checkout@v4
 
     - name: get mathlib cache
-      if: ${{ inputs.downstream-of-mathlib == 'true' }}
+      if: ${{ inputs.use-mathlib-cache == 'true' }}
       run: lake exe cache get
       shell: bash
 
@@ -43,6 +43,6 @@ runs:
       shell: bash
 
     - name: lint ${{ github.repository }}
-      if: ${{ inputs.downstream-of-std == 'true' }}
+      if: ${{ inputs.use-std-linter-framework == 'true' }}
       run: lake exe runLinter
       shell: bash
