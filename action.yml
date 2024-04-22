@@ -15,6 +15,10 @@ inputs:
     description: 'Set to "true" if your project is downstream of Std to use Std''s linter framework'
     required: false
     default: "false"
+  lint-module:
+    description: "Set to the module you want to lint"
+    required: false
+    default: "."
 runs:
   using: "composite"
   steps:
@@ -44,5 +48,5 @@ runs:
 
     - name: lint ${{ github.repository }}
       if: ${{ inputs.use-std-linter-framework == 'true' }}
-      run: lake exe runLinter
+      run: lake exe runLinter ${{ inputs.lint-module }}
       shell: bash
