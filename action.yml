@@ -3,6 +3,10 @@ description: |
   Standard CI for Lean projects. 
   Installs elan, (optionally) gets Mathlib cache, builds, tests, and (optionally) lints the project
 inputs:
+  run-tests:
+    description: 'Set to "false" to skip tests'
+    required: false
+    default: "true"
   use-mathlib-cache:
     description: 'Set to "true" if your project is downstream of Mathlib to run "lake exe cache get" before build'
     required: false
@@ -34,7 +38,8 @@ runs:
       shell: bash
 
     - name: test ${{ github.repository }}
-      run: $GITHUB_ACTION_PATH/test.sh
+      if: ${{ inputs.run-tests == 'true' }}
+      run: lake test
       shell: bash
 
     - name: lint ${{ github.repository }}
