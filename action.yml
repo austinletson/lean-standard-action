@@ -3,22 +3,25 @@ description: |
   Standard CI for Lean projects. 
   Installs elan, (optionally) gets Mathlib cache, builds, tests, and (optionally) lints the project
 inputs:
-  run-tests:
-    description: 'Set to "false" to skip tests'
+  test:
+    description: |
+      Run lake test.
+      Allowed values: "true" or "false". Defaults to "true"
     required: false
     default: "true"
-  use-mathlib-cache:
-    description: 'Set to "true" if your project is downstream of Mathlib to run "lake exe cache get" before build'
-    required: false
-    default: "false"
-  use-std-linter-framework:
-    description: 'Set to "true" if your project is downstream of Std to use Std''s linter framework'
+  mathlib-cache:
+    description: | 
+      Run "lake exe cache get" before build.
+      Must be downstream of Mathlib
+      Allowed values: "true" or "false". Defaults to "false"
     required: false
     default: "false"
   lint-module:
-    description: "Set to the module you want to lint"
+    description: |
+      Run "lake exe runLinter" on the specified module.
+      Allowed values: name of module to lint. If no module is provide linter will not run.
     required: false
-    default: "."
+    default: ""
 runs:
   using: "composite"
   steps:
@@ -33,7 +36,7 @@ runs:
     - uses: actions/checkout@v4
 
     - name: get mathlib cache
-      if: ${{ inputs.use-mathlib-cache == 'true' }}
+      if: ${{ inputs.mathlib-cache == 'true' }}
       run: lake exe cache get
       shell: bash
 
@@ -42,11 +45,11 @@ runs:
       shell: bash
 
     - name: test ${{ github.repository }}
-      if: ${{ inputs.run-tests == 'true' }}
+      if: ${{ inputs.test == 'true' }}
       run: lake test
       shell: bash
 
     - name: lint ${{ github.repository }}
-      if: ${{ inputs.use-std-linter-framework == 'true' }}
+      if: ${{ inputs.lint-module != '' }}
       run: lake exe runLinter ${{ inputs.lint-module }}
       shell: bash
