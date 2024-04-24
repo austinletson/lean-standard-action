@@ -37,10 +37,7 @@ runs:
 
     - name: look for mathlib
       id: look-for-mathlib
-      run: |
-        if grep -q "require mathlib" lakefile.lean; then
-          echo "EXISTS=true" >> "$GITHUB_OUTPUT"
-        fi
+      run: ./look_for_mathlib.sh
       shell: bash
 
     - name: get mathlib cache
