@@ -10,7 +10,7 @@ inputs:
     required: false
     default: "true"
   mathlib-cache:
-    description: | 
+    description: |
       Run "lake exe cache get" before build.
       Must be downstream of Mathlib
       Allowed values: "true" or "false". Defaults to "false"
@@ -40,6 +40,7 @@ runs:
       run: |
         if grep -q "require mathlib" lakefile.lean; then
           echo "EXISTS=true" >> "$GITHUB_OUTPUT"
+        fi
       shell: bash
 
     - name: get mathlib cache
