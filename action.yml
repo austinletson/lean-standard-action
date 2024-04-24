@@ -35,8 +35,15 @@ runs:
 
     - uses: actions/checkout@v4
 
+    - name: look for mathlib
+      id: look-for-mathlib
+      run: |
+        if grep -q "require mathlib" lakefile.lean; then
+          echo "EXISTS=true" >> "$GITHUB_OUTPUT"
+      shell: bash
+
     - name: get mathlib cache
-      if: ${{ inputs.mathlib-cache == 'true' }}
+      if: ${{ steps.look-for-mathlib.outputs.EXISTS == 'true' || inputs.mathlib-cache == 'true' }}
       run: lake exe cache get
       shell: bash
 
