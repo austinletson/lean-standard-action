@@ -37,7 +37,12 @@ runs:
 
     - name: look for mathlib
       id: look-for-mathlib
-      run: ./look_for_mathlib.sh
+      run: |
+        echo "Looking for mathlib dependency"
+        if grep -q "require mathlib" lakefile.lean; then
+          echo "EXISTS=true" >> "$GITHUB_OUTPUT"
+          echo "Mathlib dependency found"
+        fi
       shell: bash
 
     - name: get mathlib cache
