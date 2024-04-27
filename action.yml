@@ -23,30 +23,20 @@ inputs:
       Allowed values: name of module to lint. If no module is provide linter will not run.
     required: false
     default: ""
+  check-reservoir-eligibility:
+    description: |
+      Check if the repository is eligible for the reservoir.
+      Allowed values: "true" or "false". Defaults to "false"
+    required: false
+    default: "false"
 runs:
   using: "composite"
   steps:
     - name: install elan
-      run: |
-        set -o pipefail
-        curl -sSfL https://github.com/leanprover/elan/releases/download/v1.4.2/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
-        ./elan-init -y --default-toolchain none
-        echo "$HOME/.elan/bin" >> $GITHUB_PATH
+      run: ${{ github.action_path }}/scripts/install_elan.sh
       shell: bash
 
     - uses: actions/checkout@v4
-
-    - name: look for mathlib
-      id: look-for-mathlib
-      run: |
-        echo "Looking for mathlib dependency"
-        if grep -q "require mathlib" lakefile.lean; then
-          echo "EXISTS=true" >> "$GITHUB_OUTPUT"
-          echo "Mathlib dependency found. Using Mathlib cache."
-        else
-          echo "Mathlib dependency not found. Skipping Mathlib cache."
-        fi
-      shell: bash
 
     - uses: actions/cache@v4
       with:
@@ -55,8 +45,14 @@ runs:
         # if no cache hit, fall back to the (latest) previous cache
         restore-keys: ${{ runner.os }}-lake-
 
+    - name: detect mathlib
+      id: detect-mathlib
+      run: ${{ github.action_path }}/scripts/detect_mathlib.sh
+      shell: bash
+
     - name: get mathlib cache
-      if: ${{ steps.look-for-mathlib.outputs.EXISTS == 'true' || inputs.mathlib-cache == 'true' }}
+      # only get the cache if Mathlib was detected by previous step or if the user explicitly requested it
+      if: ${{ steps.look-for-mathlib.outputs.DETECTED_MATHLIB == 'true' || inputs.mathlib-cache == 'true' }}
       run: lake exe cache get
       shell: bash
 
@@ -72,4 +68,14 @@ runs:
     - name: lint ${{ github.repository }}
       if: ${{ inputs.lint-module != '' }}
       run: lake exe runLinter ${{ inputs.lint-module }}
+      shell: bash
+
+    - name: check reservoir eligibility
+      if: ${{ inputs.check-reservoir-eligibility == 'true' }}
+      # Passes in the private status, number of stars, and license id of the repository to resivoir check script
+      run: |
+        ${{ github.action_path }}/scripts/check_reservoir_eligibility.sh \
+          "${{ github.event.repository.private }}"\
+          "${{ github.event.repository.stargazers_count }}"\
+          "${{ toJson(github.event.repository.license.spdx_id) }}"
       shell: bash
