@@ -46,6 +46,7 @@ runs:
           echo "Mathlib dependency not found. Skipping Mathlib cache."
         fi
       shell: bash
+
     - uses: actions/cache@v4
       with:
         path: .lake
