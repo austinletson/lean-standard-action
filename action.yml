@@ -16,12 +16,6 @@ inputs:
       Allowed values: "true" or "false". Defaults to "false"
     required: false
     default: "false"
-  lake-cache:
-    description: |
-      Use the cache action to cache the contents of .lake between builds.
-      Allowed values: "true" or "false". Defaults to "false"
-    required: false
-    default: "false"
   lint-module:
     description: |
       Run "lake exe runLinter" on the specified module.
@@ -52,7 +46,7 @@ runs:
           echo "Mathlib dependency not found. Skipping Mathlib cache."
         fi
       shell: bash
-    - uses: actions/cache@v3
+    - uses: actions/cache@v4
       with:
         path: .lake
         key: ${{ runner.os }}-lake-${{ github.sha }}
