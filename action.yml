@@ -48,6 +48,13 @@ runs:
         fi
       shell: bash
 
+    - uses: actions/cache@v4
+      with:
+        path: .lake
+        key: ${{ runner.os }}-lake-${{ github.sha }}
+        # if no cache hit, fall back to the (latest) previous cache
+        restore-keys: ${{ runner.os }}-lake-
+
     - name: get mathlib cache
       if: ${{ steps.look-for-mathlib.outputs.EXISTS == 'true' || inputs.mathlib-cache == 'true' }}
       run: lake exe cache get
