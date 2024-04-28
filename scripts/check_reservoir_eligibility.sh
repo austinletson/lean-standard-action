@@ -42,7 +42,7 @@ if [ $private == "true" ]; then
 fi
 
 # Check if the repository has less than 2 stars
-if [ $number_of_stars -lt 0 ]; then
+if [ $number_of_stars -lt 2 ]; then
   echo "Package is ineligible for Reservoir because the repository has less than 2 stars."
   exit_code=1
 fi
