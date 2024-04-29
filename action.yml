@@ -18,7 +18,7 @@ inputs:
     description: |
       Run "lake exe cache get" before build.
       Project must be downstream of Mathlib.
-      If this input is ommitted, the action will attempt to automatically detect if the project is downstream of Mathlib.
+      If this input is not provided, the action will attempt to automatically detect if the project is downstream of Mathlib.
       Allowed values: "true" or "false".
     required: false
     default: ""
@@ -60,7 +60,7 @@ runs:
 
     - name: get mathlib cache
       # only get the cache if Mathlib was detected by previous step or if the user explicitly requested it
-      if: ${{ steps.look-for-mathlib.outputs.DETECTED_MATHLIB == 'true' || inputs.mathlib-cache == 'true' }}
+      if: ${{ steps.detect-mathlib.outputs.DETECTED_MATHLIB == 'true' || inputs.mathlib-cache == 'true' }}
       run: lake exe cache get
       shell: bash
 
