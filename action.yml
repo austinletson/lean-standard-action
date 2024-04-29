@@ -1,7 +1,12 @@
 name: "Lean Standard CI"
 description: |
   Standard CI for Lean projects. 
-  Installs elan, (optionally) gets Mathlib cache, builds, tests, and (optionally) lints the project
+  Steps:
+    - install elan
+    - get Mathlib cache (optional)
+    - lake build
+    - lake test (optional)
+    - lake exe runLinter (optional, must be downstream of Std)
 inputs:
   test:
     description: |
@@ -12,10 +17,11 @@ inputs:
   mathlib-cache:
     description: |
       Run "lake exe cache get" before build.
-      Must be downstream of Mathlib
-      Allowed values: "true" or "false". Defaults to "false"
+      Project must be downstream of Mathlib.
+      If this input is ommitted, the action will attempt to automatically detect if the project is downstream of Mathlib.
+      Allowed values: "true" or "false".
     required: false
-    default: "false"
+    default: ""
   lint-module:
     description: |
       Run "lake exe runLinter" on the specified module.
@@ -46,6 +52,8 @@ runs:
         restore-keys: ${{ runner.os }}-lake-
 
     - name: detect mathlib
+      # only detect Mathlib if the user did not provide the mathlib-cache input
+      if: ${{ inputs.mathlib-cache == '' }}
       id: detect-mathlib
       run: ${{ github.action_path }}/scripts/detect_mathlib.sh
       shell: bash
