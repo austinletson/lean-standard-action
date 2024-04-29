@@ -80,8 +80,10 @@ runs:
 
     - name: check reservoir eligibility
       if: ${{ inputs.check-reservoir-eligibility == 'true' }}
-      # Passes in the private status, number of stars, and license id of the repository to resivoir check script
+      # Passes in the private status, number of stars, and license id of the repository to check_reservoir_eligibility.sh script
       run: |
+        echo "${{ toJson(github.event.repository.license.spdx_id) }}"
+        echo "${{ github.event.repository.license.spdx_id }}"
         ${{ github.action_path }}/scripts/check_reservoir_eligibility.sh \
           "${{ github.event.repository.private }}"\
           "${{ github.event.repository.stargazers_count }}"\
