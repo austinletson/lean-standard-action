@@ -1,4 +1,6 @@
 #!/bin/bash
+
+# Assign the arguments from github action to named variables
 private=$1
 number_of_stars=$2
 license_id=$3
@@ -6,32 +8,33 @@ license_id=$3
 # Initialize exit code
 exit_code=0
 
-
 # Function to check if the license_id is a valid SPDX license
 function check_license() {
   local id=$1
   SPDX_DATA_URL="https://raw.githubusercontent.com/spdx/license-list-data/main/json/licenses.json"
-  # Fetch the SPDX license list and read it into a variable
+  # Fetch the SPDX license list
   spdx_licenses=$(curl -s $SPDX_DATA_URL | jq -r '.licenses[].licenseId')
 
   # Loop through the licenses and check if the license_id is a valid SPDX license
   for license in $spdx_licenses; do
     if [ "$license" == "$id" ]; then
+      # Return 0 if the license_id is a valid SPDX license
       return 0
     fi
   done
+  # Return 1 if the license_id is not a valid SPDX license
   return 1
 }
 
 # Check if the license_id is a valid SPDX license and assign exit code
 if ! check_license $license_id; then
-  echo "Package is ineligible for Reservoir because the license is not a valid SPDX license."
+  echo "Package is ineligible for Reservoir because the repository does not contain a valid SPDX license."
   exit_code=1
 fi
 
 # Check for lake-manifest.json file
 if [ ! -f "lake-manifest.json" ]; then
-  echo "Package is ineligible for Reservoir because there is no lake-manifest.json file."
+  echo "Package is ineligible for Reservoir because the repository does not contain a lake-manifest.json file."
   exit_code=1
 fi
 
