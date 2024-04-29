@@ -12,18 +12,15 @@ exit_code=0
 function check_license() {
   local id=$1
   SPDX_DATA_URL="https://raw.githubusercontent.com/spdx/license-list-data/main/json/licenses.json"
-  # Fetch the SPDX license list
-  spdx_licenses=$(curl -s $SPDX_DATA_URL | jq -r '.licenses[].licenseId')
 
-  # Loop through the licenses and check if the license_id is a valid SPDX license
-  for license in $spdx_licenses; do
-    if [ "$license" == "$id" ]; then
-      # Return 0 if the license_id is a valid SPDX license
+  # Fetch the SPDX license list and filter by licenseId and isOsiApproved
+  license=$(curl -s $SPDX_DATA_URL | jq -r '.licenses[] | select(.licenseId == "'$id'" and .isOsiApproved == true)')
+  if [ -n "$license" ]; then
       return 0
-    fi
-  done
-  # Return 1 if the license_id is not a valid SPDX license
-  return 1
+  else
+    # Return 1 if the license_id is not a valid SPDX license
+    return 1
+  fi
 }
 
 # Check if the license_id is a valid SPDX license and assign exit code
