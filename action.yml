@@ -72,6 +72,11 @@ runs:
       run: lake build
       shell: bash
 
+    - uses: actions/cache/save@v4
+      with:
+        path: .lake
+        key: ${{ runner.os }}-lake-${{ github.sha }}
+
     - name: test ${{ github.repository }}
       if: ${{ inputs.test == 'true' }}
       run: lake test
