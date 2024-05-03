@@ -1,4 +1,4 @@
-name: "Lean Standard CI"
+name: "Lean Action - CI for Lean Projects"
 description: |
   Standard CI for Lean projects. 
   Steps:
