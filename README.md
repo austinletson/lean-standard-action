@@ -1,3 +1,5 @@
+THIS IS AN OLD VERSION OF THIS ACTION. USE [lean-action](https://github.com/leanprover/lean-action) INSTEAD.
+
 # lean-action - CI for Lean Projects
 
 lean-action provides steps to build, test, and lint [Lean](https://github.com/leanprover/lean4) projects on Github
